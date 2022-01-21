@@ -8,6 +8,7 @@ import sem.enums.RoleName;
 import sem.model.Role;
 import sem.repository.RoleRepository;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -17,11 +18,17 @@ public class RoleService {
     @Autowired
     RoleRepository roleRepository;
 
+    @Transactional(readOnly = true)
     public Optional<Role> getByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName);
     }
-
+    @Transactional
     public void save(Role rol) {
         roleRepository.save(rol);
     }
+    
+    @Transactional(readOnly = true)
+	public  ArrayList<Role>  findAll() {
+		return  (ArrayList<Role>)roleRepository.findAll();
+	}
 }

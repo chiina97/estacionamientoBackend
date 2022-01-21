@@ -1,5 +1,6 @@
 package sem.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,12 @@ public class HolidayService implements IHoliday {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Iterable<Holiday> findAll() {
-		return holidayRepo.findAll();
+	public  ArrayList<Holiday>  findAll() {
+		return  (ArrayList<Holiday>)holidayRepo.findAll();
 	}
 
 	@Override
+	@Transactional
 	public Holiday save(Holiday f) {
 		return holidayRepo.save(f);
 	}
