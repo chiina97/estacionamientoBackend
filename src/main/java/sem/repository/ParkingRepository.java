@@ -16,4 +16,6 @@ public interface ParkingRepository extends JpaRepository<Parking, Long> {
 	@Query(value = "SELECT * FROM Parking p WHERE p.started_parking = 1 and p.user_id=?1", nativeQuery = true)
 	Optional<Parking> findStartedParkingBy(Long id);
 
+	@Query(value="SELECT * FROM Parking p WHERE p.started_parking = 1 and p.patent=?1 and p.user_id =?2", nativeQuery = true)
+	Optional<Parking> getParkingStartedWithPatent(String patent, Long idUser);
 }
