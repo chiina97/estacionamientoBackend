@@ -1,12 +1,11 @@
 package sem.serviceImpl;
-
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import sem.dto.TimePriceDTO;
 import sem.model.City;
 import sem.model.History;
 import sem.model.Parking;
@@ -72,35 +71,10 @@ public class ParkingService implements IParking {
 			parking.get().setUser(p.getUser());
 			parking.get().setStartTime(p.getStartTime());
 
-			@SuppressWarnings("deprecation")
-			Date startDate = new Date(p.getStartTime());
-			Date currentDate = new Date();
+			TimePriceDTO timePrice=parking.get().getCurrentPaymentDetails(city.get());
+			parking.get().setAmount(timePrice.getPrice());
 
-			// tiempo trasncurrido (hora actual - hora inicio):
-			Long timeElapsed = currentDate.getTime() - startDate.getTime();
-
-			// lo paso a segundos:
-			double seconds = timeElapsed / 1000;
-			double hour = Math.floor(seconds / 3600);
-
-			double rest = Math.floor(((seconds % 3600) / 60) % 15);
-			double minutes = Math.floor(((seconds % 3600) / 60) / 15);
-			double valueByFraction = city.get().getValueByHour() / 4;
-
-			if ((rest == 0) && (minutes != 0)) {
-
-				// si pasaron extactamente de a 15 minutos
-				parking.get().setAmount((minutes * valueByFraction) + (hour * city.get().getValueByHour()));
-
-			} else {
-
-				// si pasa de a 15 minutos y pico ,te cobra los minutos que pasaron como si
-				// fueran 15
-				double account = (minutes * valueByFraction) + (hour * city.get().getValueByHour()) + valueByFraction;
-				parking.get().setAmount(account);
-
-			}
-
+		
 			parking.get().setStartedParking(p.isStartedParking());
 
 			User user = parking.get().getUser();

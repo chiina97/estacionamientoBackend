@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import sem.dto.Message;
+import sem.dto.TimePriceDTO;
 import sem.model.City;
 import sem.model.Holiday;
 import sem.model.Parking;
@@ -117,6 +118,23 @@ public class ParkingController {
 		}
 
 	}
+	 @GetMapping("/getTime/{id}")
+	    public TimePriceDTO getTime(@PathVariable("id") Long id){
+			//retorna en milisegundos el tiempo transcurrido.
+			System.out.println("Metodo: /getTime");
+			Optional<User> user = this.userService.findById(id);
+			Optional<Parking> queryResult = parkingService.findStartedParkingBy(id);
+			Optional<City> city = cityService.findById(Long.parseLong("1"));
+			
+			if(user.isEmpty()) {	
+				return null;
+			}else {
+				TimePriceDTO data = queryResult.get().getCurrentPaymentDetails(city.get());
+				return data;
+			}
+			
+	    }
+	
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> update(@RequestBody Parking parking, @PathVariable(value = "id") Long parkingId) {

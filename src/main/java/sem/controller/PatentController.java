@@ -104,11 +104,11 @@ public class PatentController {
 					HttpStatus.BAD_REQUEST);
 
 		}
-		Optional<Patent>patentPrevious=patentService.findById(patentId);
-        Parking startedPatent=parkingService.findByPatentStarted(patentPrevious.get().getPatent());
+		Optional<Patent>patentOriginal=patentService.findById(patentId);
+        Parking startedPatent=parkingService.findByPatentStarted(patentOriginal.get().getPatent());
         
 		if(startedPatent!=null){
-    		return new ResponseEntity<Message>(new Message("No se puede editar la patente "+patentPrevious.get().getPatent()+" porque tiene estacionamiento iniciado"), HttpStatus.BAD_REQUEST);
+    		return new ResponseEntity<Message>(new Message("No se puede editar la patente "+patentOriginal.get().getPatent()+" porque tiene estacionamiento iniciado"), HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to Entity
 		Patent patentRequest = modelMapper.map(patentDTO, Patent.class);

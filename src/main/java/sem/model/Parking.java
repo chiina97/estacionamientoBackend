@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import sem.dto.Message;
+import sem.dto.TimePriceDTO;
 
 @Entity
 @Table(name = "parking")
@@ -85,7 +86,39 @@ public class Parking {
 		return false;
 
 	}
+	
+	public TimePriceDTO getCurrentPaymentDetails(City city) {
+	@SuppressWarnings("deprecation")
+	Date startDate = new Date(this.getStartTime());
+	Date currentDate = new Date();
 
+	// tiempo trasncurrido (hora actual - hora inicio):
+	Long timeElapsed = currentDate.getTime() - startDate.getTime();
+
+	// lo paso a segundos:
+	double seconds = timeElapsed / 1000;
+	double hour = Math.floor(seconds / 3600);
+
+	double rest = Math.floor(((seconds % 3600) / 60) % 15);
+	double minutes = Math.floor(((seconds % 3600) / 60) / 15);
+	double valueByFraction = city.getValueByHour() / 4;
+
+
+	if ((rest == 0) && (minutes != 0)) {
+
+		// si pasaron extactamente de a 15 minutos
+		return new TimePriceDTO(this.getPatent(),hour,Math.floor((seconds % 3600) /60),(minutes * valueByFraction) + (hour * city.getValueByHour()));
+
+	} else {
+
+		// si pasa de a 15 minutos y pico ,te cobra los minutos que pasaron como si
+		// fueran 15
+		double account = (minutes * valueByFraction) + (hour * city.getValueByHour()) + valueByFraction;
+		return new TimePriceDTO(this.getPatent(),hour,Math.floor((seconds % 3600) /60),account);
+
+	}
+
+}
 	public Long getId() {
 		return id;
 	}
