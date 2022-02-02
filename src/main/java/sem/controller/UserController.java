@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import sem.dto.CurrentAccountDTO;
 import sem.dto.JwtDTO;
@@ -64,6 +66,8 @@ public class UserController {
 	JwtProvider jwtProvider;
 	@Autowired
 	HistoryController historyController;
+	@Autowired
+	private MessageSource msg;
 
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
@@ -75,11 +79,11 @@ public class UserController {
 					HttpStatus.BAD_REQUEST);
 		}
 		if (userService.existsByPhone(userDTO.getPhone())) {
-			return new ResponseEntity<Message>(new Message("El usuario con ese telefono ya existe"),
+			return new ResponseEntity<Message>(new Message(msg.getMessage("user.existPhone", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 		if (userService.existsByMail(userDTO.getMail())) {
-			return new ResponseEntity<Message>(new Message("El usuario con ese correo ya existe"),
+			return new ResponseEntity<Message>(new Message(msg.getMessage("user.existEmail", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to entity
@@ -107,7 +111,7 @@ public class UserController {
 		UserDTO userResponse = modelMapper.map(user, UserDTO.class);
 		userResponse.setCurrentAccount(accountReponse);
 
-		return new ResponseEntity<Message>(new Message("usuario creado!"), HttpStatus.OK);
+		return new ResponseEntity<Message>(new Message(msg.getMessage("user.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 
 	}
 
@@ -115,9 +119,8 @@ public class UserController {
 	public ResponseEntity<?> authenticate(@Valid @RequestBody LoginDTO loginDto, BindingResult result) {
 		// validaciones:
 		if (result.hasErrors()) {
-			return new ResponseEntity<Message>(new Message("El telefono/contraseña es incorrecta"),
+			return new ResponseEntity<Message>(new Message(msg.getMessage("user.notValid", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
-
 		}
 
 		Authentication authentication = authenticationManager
@@ -168,7 +171,7 @@ public class UserController {
 
 	// Update an User
 	@PutMapping("/account/{id}")
-	public ResponseEntity<?> updateImporte(@Valid @RequestBody CurrentAccountDTO accountDTO, BindingResult result,
+	public ResponseEntity<?> updateAmount(@Valid @RequestBody CurrentAccountDTO accountDTO, BindingResult result,
 			@PathVariable(value = "id") Long userId) {
 		// validaciones:
 		if (result.hasErrors()) {
@@ -190,7 +193,7 @@ public class UserController {
 			History history = new History("Carga", accountDTO.getBalance(), user.get().getCurrentAccount().getBalance(),
 					user.get().getCurrentAccount());
 			historyController.create(history);
-			return new ResponseEntity<Message>(new Message("Importe actualizado!"), HttpStatus.OK);
+			return new ResponseEntity<Message>(new Message(msg.getMessage("user.update.amount", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 		}
 
 	}

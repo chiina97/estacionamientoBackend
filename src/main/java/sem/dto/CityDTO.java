@@ -12,14 +12,14 @@ public class CityDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	@NotNull(message = "Debe ingresar una hora de inicio")
-	@NotBlank(message = "La hora de inicio no puede ser vacio")
+	@NotNull(message = "{startTime.notNull}")
+	@NotBlank(message = "{startTime.notBlank}")
 	private String startTime;
-	@NotNull(message = "Debe ingresar una hora fin")
-	@NotBlank(message = "La hora de fin no puede ser vacio")
+	@NotNull(message = "{endTime.notNull}")
+	@NotBlank(message = "{endTime.notBlank}")
 	private String endTime;
-	@NotNull(message = "Debe ingresar el valor de estacionamiento a cobrar por hora")
-	private double balancePerHs;
+	@NotNull(message = "{value.notNull}")
+	private double valueByHour;
 
 	public Long getId() {
 		return id;
@@ -45,12 +45,13 @@ public class CityDTO implements Serializable {
 		this.endTime = endTime;
 	}
 
-	public double getBalancePerHs() {
-		return balancePerHs;
+	public double getValueByHour() {
+		return valueByHour;
 	}
 
-	public void setBalancePerHs(double balancePerHs) {
-		this.balancePerHs = balancePerHs;
+	public void setValueByHour(double valueByHour) {
+		this.valueByHour = valueByHour;
 	}
+
 
 }

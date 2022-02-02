@@ -1,15 +1,13 @@
 package sem.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import sem.dto.CityDTO;
+import sem.dto.Message;
 import sem.model.City;
 import sem.serviceImpl.CityService;
 
@@ -37,35 +36,26 @@ public class CityController {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private MessageSource msg;
 
 	// Create a new city
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody CityDTO cityDTO, BindingResult result) {
 		// validaciones:
-		Map<String, Object> response = new HashMap<>();
+	
 		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors()
-					.stream()
-					.map(e -> e.getDefaultMessage())
-					.collect(Collectors.toList());
-			response.put("errors", errors);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-
+			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
+					HttpStatus.BAD_REQUEST);
 		}
 
 		// convert DTO to entity
 		City cityRequest = modelMapper.map(cityDTO, City.class);
 
-		City city = cityService.save(cityRequest);
+		cityService.save(cityRequest);
 
-		// convert entity to DTO
-		CityDTO cityResponse = modelMapper.map(city, CityDTO.class);
-
-		// si todo sale bien informe exitosamente el resultado
-		response.put("mensaje", "La ciudad ha sido creada exitosamente!");
-		response.put("city", cityResponse);
-
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		return new ResponseEntity<Message>(new Message(msg.getMessage("city.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 	}
 
 	// Read all citys
@@ -94,30 +84,20 @@ public class CityController {
 	public ResponseEntity<?> update(@Valid @RequestBody CityDTO cityDTO, BindingResult result,
 			@PathVariable(value = "id") Long cityId) {
 		// validaciones:
-		Map<String, Object> response = new HashMap<>();
 		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors()
-					.stream()
-					.map(e -> e.getDefaultMessage())
-					.collect(Collectors.toList());
-			response.put("errors", errors);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-
+			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
+					HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to Entity
 		City cityRequest = modelMapper.map(cityDTO, City.class);
 
 		City city = cityService.update(cityRequest, cityId);
 
-		// entity to DTO
-		CityDTO cityResponse = modelMapper.map(city, CityDTO.class);
 		if (city == null) {
 			return ResponseEntity.notFound().build();
 		} else {
-			// si todo sale bien informe exitosamente el resultado
-			response.put("mensaje", "El usuario ha sido actualizado exitosamente!");
-			response.put("city", cityResponse);
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+			
+			return new ResponseEntity<Message>(new Message(msg.getMessage("city.update", null, LocaleContextHolder.getLocale())), HttpStatus.CREATED);
 		}
 
 	}

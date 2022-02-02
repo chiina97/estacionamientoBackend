@@ -3,9 +3,9 @@ package sem.dto;
 import java.io.Serializable;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,11 +16,11 @@ public class CurrentAccountDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	@NotNull(message = "Debe ingresar un telefono")
-	@Min(value = 10, message = "El telefono debe tener 10 digitos!")
-	@Pattern(regexp = "\\d{10}", message = "El telefono debe contener solo numeros")
+	@NotNull(message = "{phone.notNull}")
+	@Size(min = 10, max = 10, message = "{phone.notSize}")
+	@Pattern(regexp = "[0-9]+", message = "{phone.notValid}")
 	private String phone;
-	@NotNull(message = "Debe ingresar un saldo")
+	@NotNull(message = "{balance.notNull}")
 	@DecimalMin("100")
 	private double balance;
 	@JsonIgnore

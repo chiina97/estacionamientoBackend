@@ -28,6 +28,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
     JwtEntryPoint jwtEntryPoint;
+    
 
     @Bean
     public JwtTokenFilter jwtTokenFilter() {

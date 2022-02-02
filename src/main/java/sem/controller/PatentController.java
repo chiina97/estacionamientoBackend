@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import sem.dto.Message;
 import sem.dto.PatentDTO;
@@ -44,6 +46,9 @@ public class PatentController {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private MessageSource msg;
 
 	// Read all patents
 	@GetMapping("/user/{id}")
@@ -62,7 +67,7 @@ public class PatentController {
 
 		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
 			return new ResponseEntity<Message>(
-					new Message("la patente " + patentDTO.getPatent() + " ya existe en su listado de patentes"),
+					new Message(msg.getMessage("patent.existPatent", new String[]{patentDTO.getPatent()}, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -75,7 +80,7 @@ public class PatentController {
 
 		patentService.save(patentRequest);
 
-		return new ResponseEntity<Message>(new Message("patente creada!"), HttpStatus.OK);
+		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 	}
 
 	// Read an patent
@@ -106,9 +111,9 @@ public class PatentController {
 		}
 		Optional<Patent>patentOriginal=patentService.findById(patentId);
         Parking startedPatent=parkingService.findByPatentStarted(patentOriginal.get().getPatent());
-        
 		if(startedPatent!=null){
-    		return new ResponseEntity<Message>(new Message("No se puede editar la patente "+patentOriginal.get().getPatent()+" porque tiene estacionamiento iniciado"), HttpStatus.BAD_REQUEST);
+    		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update.parking.started",
+    										new String[]{patentOriginal.get().getPatent()}, LocaleContextHolder.getLocale())), HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to Entity
 		Patent patentRequest = modelMapper.map(patentDTO, Patent.class);
@@ -123,7 +128,7 @@ public class PatentController {
 			return ResponseEntity.notFound().build();
 		} else {
 			
-			return new ResponseEntity<Message>(new Message("patente actualizada!"), HttpStatus.CREATED);
+			return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update", null, LocaleContextHolder.getLocale())), HttpStatus.CREATED);
 		}
 
 	}
@@ -133,9 +138,9 @@ public class PatentController {
 	public ResponseEntity<?> delete(@PathVariable(value = "id") Long patentId) {
 		Optional<Patent>patent=patentService.findById(patentId);
 		if(this.parkingService.parkingStartedWithPatent(patent.get().getPatent(),patent.get().getUser().getId())) 
-    		return new ResponseEntity<Message>(new Message("No se puede eliminar una patente con estacionamiento iniciado"), HttpStatus.BAD_REQUEST);
+    		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.delete.parking.started", new String[]{patent.get().getPatent()}, LocaleContextHolder.getLocale())), HttpStatus.BAD_REQUEST);
 		patentService.deleteById(patentId);
-		return new ResponseEntity<Message>(new Message("Se elimino la patente"+patent.get().getPatent()+"correctamente!") , HttpStatus.OK);
+		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.delete", new String[]{patent.get().getPatent()}, LocaleContextHolder.getLocale())) , HttpStatus.OK);
 		
 
 	}

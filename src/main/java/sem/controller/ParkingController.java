@@ -3,6 +3,7 @@ package sem.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import sem.dto.Message;
 import sem.dto.TimePriceDTO;
@@ -40,13 +42,16 @@ public class ParkingController {
 	CityService cityService;
 	@Autowired
 	HolidayService holidayService;
+	
+	@Autowired
+	private MessageSource msg;
 
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody Parking parking) {
 		Parking startedParking = parkingService.findByPatentStarted(parking.getPatent());
 		if (startedParking != null) {
 			return new ResponseEntity<Message>(
-					new Message("La patente " + parking.getPatent() + " ya tiene un parking iniciado"),
+					new Message(msg.getMessage("patent.parking.started", new String[]{parking.getPatent()}, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		} else {
 
@@ -54,20 +59,20 @@ public class ParkingController {
 			Optional<User> user = userService.findById(parking.getUser().getId());
 			Iterable<Holiday> holidays = holidayService.findAll();
 
-			Message msg = Parking.validations(city.get(), holidays);
+			Message result = Parking.validations(city.get(), holidays);
 			// saldo de cuenta:
 			double accountBalance = user.get().getCurrentAccount().getBalance();
 
 			if (accountBalance >= city.get().getValueByHour()) {
-				if (msg == null) {
+				if (result == null) {
 					parkingService.save(parking);
 					return new ResponseEntity<Parking>(parking, HttpStatus.CREATED);
 				}
 
 				else
-					return new ResponseEntity<Message>(msg, HttpStatus.BAD_REQUEST);
+					return new ResponseEntity<Message>(result, HttpStatus.BAD_REQUEST);
 			} else
-				return new ResponseEntity<Message>(new Message("El saldo de la cuenta es insuficiente"),
+				return new ResponseEntity<Message>(new Message(msg.getMessage("currentAccount.balance.insufficient", null, LocaleContextHolder.getLocale())),
 						HttpStatus.BAD_REQUEST);
 
 		}
@@ -121,12 +126,12 @@ public class ParkingController {
 	 @GetMapping("/getTime/{id}")
 	    public TimePriceDTO getTime(@PathVariable("id") Long id){
 			//retorna en milisegundos el tiempo transcurrido.
-			System.out.println("Metodo: /getTime");
+			
 			Optional<User> user = this.userService.findById(id);
-			Optional<Parking> queryResult = parkingService.findStartedParkingBy(id);
+			Optional<Parking> queryResult = parkingService.findStartedParkingBy(user.get().getId());
 			Optional<City> city = cityService.findById(Long.parseLong("1"));
 			
-			if(user.isEmpty()) {	
+			if(queryResult.isEmpty()) {	
 				return null;
 			}else {
 				TimePriceDTO data = queryResult.get().getCurrentPaymentDetails(city.get());

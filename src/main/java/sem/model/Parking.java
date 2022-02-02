@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+
 import sem.dto.Message;
 import sem.dto.TimePriceDTO;
 

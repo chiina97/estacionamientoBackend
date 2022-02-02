@@ -20,17 +20,17 @@ public class UserDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
-	@NotNull(message = "Debe ingresar una clave")
-	@Size(min = 4, message = "La clave debe tener al menos 4 digitos")
+	@NotNull(message = "{password.notNull}")
+	@Size(min = 4, message = "{password.notSize}")
 	private String password;
-	@NotNull(message = "Debe ingresar un correo")
-	@NotBlank(message = "el correo NO puede ser vacio")
-	@Email(message = "el correo debe tener el formato texto@texto.texto")
+	@NotNull(message = "{email.notNull}")
+	@NotBlank(message = "{email.notBlank}")
+	@Email(message = "{email.notValid}")
 	private String mail;
-	@NotNull(message = "Debe ingresar un telefono")
-	@NotBlank(message = "El telefono NO puede ser vacio")
-	@Size(min = 10, max = 10, message = "El telefono debe tener 10 digitos")
-	@Pattern(regexp = "\\d{10}", message = "El telefono debe contener solo numeros")
+	@NotNull(message = "{phone.notNull}")
+	@NotBlank(message = "{phone.notBlank}")
+	@Size(min = 10, max = 10, message = "{phone.notSize}")
+	@Pattern(regexp = "[0-9]+", message = "{phone.notNumber}")
 	private String phone;
 	// roles:
 	private Set<String> roles = new HashSet<>();

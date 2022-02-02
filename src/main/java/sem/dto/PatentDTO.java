@@ -16,12 +16,12 @@ public class PatentDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	@NotNull(message = "")
-	@NotBlank(message = "la patente NO puede ser vacio")
-	@Pattern(regexp = "([a-zA-Z]{3}\\d{3})|([a-zA-Z]{2}\\d{3}[a-zA-Z]{2})", message = "la patente debe tener el formato AAA999 o AA000AA")
+	@NotNull(message = "{patent.notNull}")
+	@NotBlank(message = "{patent.notBlank}")
+	@Pattern(regexp = "([a-zA-Z]{3}\\d{3})|([a-zA-Z]{2}\\d{3}[a-zA-Z]{2})", message = "{patent.notValid}")
 	private String patent;
 	// probando:
-	@NotNull(message = "La patente debe pertenecer a un usuario")
+	@NotNull(message = "{patent.notUser}")
 	private UserDTO user;
 
 	private List<Parking> parkings;

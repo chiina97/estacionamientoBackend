@@ -10,12 +10,12 @@ import javax.validation.constraints.Size;
 public class LoginDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	@NotNull(message = "Debe ingresar una clave")
+	@NotNull(message = "{password.notNull}")
 	private String password;
-	@NotNull(message = "Debe ingresar un telefono")
-	@NotBlank(message = "El telefono NO puede ser vacio")
-	@Size(min = 10, max = 10, message = "El telefono debe tener 10 digitos")
-	@Pattern(regexp = "\\d{10}", message = "El telefono debe contener solo numeros")
+	@NotNull(message = "{phone.notNull}")
+	@NotBlank(message = "{phone.notBlank}")
+	@Size(min = 10, max = 10, message = "{phone.notSize}")
+	@Pattern(regexp = "[0-9]+", message = "{phone.notValid}")
 	private String phone;
 
 	public String getPassword() {
