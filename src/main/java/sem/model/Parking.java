@@ -1,7 +1,6 @@
 package sem.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,9 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
-import sem.dto.Message;
-import sem.dto.TimePriceDTO;
 
 @Entity
 @Table(name = "parking")
@@ -32,6 +28,7 @@ public class Parking {
 
 	@OneToOne()
 	private User user;
+	
 
 	public Parking() {
 	};
@@ -44,7 +41,9 @@ public class Parking {
 		this.startedParking = startedParking;
 		this.user = user;
 	}
+	
 
+/*
 	public static Message validations(City city, Iterable<Holiday> holidays) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 		String date = sdf.format(new Date());
@@ -119,7 +118,7 @@ public class Parking {
 
 	}
 
-}
+}*/
 	public Long getId() {
 		return id;
 	}

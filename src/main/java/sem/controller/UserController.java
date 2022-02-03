@@ -91,7 +91,7 @@ public class UserController {
 
 		// creo un user con la pass hasheada
 		User user = new User(passwordEncoder.encode(userRequest.getPassword()), userRequest.getMail(),
-				userRequest.getPhone());
+				userRequest.getPhone(),userRequest.getUsername());
 
 		// agrego rol y guardo el user
 		Set<Role> roles = new HashSet<>();

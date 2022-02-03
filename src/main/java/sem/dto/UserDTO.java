@@ -20,18 +20,21 @@ public class UserDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
-	@NotNull(message = "{password.notNull}")
-	@Size(min = 4, message = "{password.notSize}")
+	@NotNull(message = "{user.password.notNull}")
+	@Size(min = 4, message = "{user.password.notSize}")
 	private String password;
-	@NotNull(message = "{email.notNull}")
-	@NotBlank(message = "{email.notBlank}")
-	@Email(message = "{email.notValid}")
+	@NotNull(message = "{user.email.notNull}")
+	@NotBlank(message = "{user.email.notBlank}")
+	@Email(message = "{user.email.notValid}")
 	private String mail;
-	@NotNull(message = "{phone.notNull}")
-	@NotBlank(message = "{phone.notBlank}")
-	@Size(min = 10, max = 10, message = "{phone.notSize}")
-	@Pattern(regexp = "[0-9]+", message = "{phone.notNumber}")
+	@NotNull(message = "{user.phone.notNull}")
+	@NotBlank(message = "{user.phone.notBlank}")
+	@Size(min = 10, max = 10, message = "{user.phone.notSize}")
+	@Pattern(regexp = "[0-9]+", message = "{user.phone.notNumber}")
 	private String phone;
+	@NotNull(message = "{user.username.notNull}")
+	@NotBlank(message = "{user.username.notBlank}")
+	private String username;
 	// roles:
 	private Set<String> roles = new HashSet<>();
 
@@ -94,6 +97,15 @@ public class UserDTO implements Serializable {
 
 	public void setCurrentAccount(CurrentAccountDTO currentAccounts) {
 		this.currentAccount = currentAccounts;
+	}
+	
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public static long getSerialversionuid() {

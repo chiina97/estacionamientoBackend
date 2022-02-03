@@ -31,6 +31,8 @@ public class User {
 	private String mail;
 	@Column(name = "phone", unique = true)
 	private String phone;
+	@Column(name = "username")
+	private String username;
 
 	// relacion cuenta corriente one to one
 	@JsonIgnore
@@ -50,12 +52,17 @@ public class User {
 	public User() {
 	}
 
-	public User(String password, String mail, String phone) {
+	
+
+	public User(String password, String mail, String phone, String username) {
 		super();
 		this.password = password;
 		this.mail = mail;
 		this.phone = phone;
+		this.username = username;
 	}
+
+
 
 	public Long getId() {
 		return id;
@@ -113,4 +120,13 @@ public class User {
 		this.roles = roles;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	
 }

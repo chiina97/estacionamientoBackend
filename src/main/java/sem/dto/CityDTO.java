@@ -12,13 +12,13 @@ public class CityDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	@NotNull(message = "{startTime.notNull}")
-	@NotBlank(message = "{startTime.notBlank}")
+	@NotNull(message = "{city.startTime.notNull}")
+	@NotBlank(message = "{city.startTime.notBlank}")
 	private String startTime;
-	@NotNull(message = "{endTime.notNull}")
-	@NotBlank(message = "{endTime.notBlank}")
+	@NotNull(message = "{city.endTime.notNull}")
+	@NotBlank(message = "{city.endTime.notBlank}")
 	private String endTime;
-	@NotNull(message = "{value.notNull}")
+	@NotNull(message = "{city.value.notNull}")
 	private double valueByHour;
 
 	public Long getId() {

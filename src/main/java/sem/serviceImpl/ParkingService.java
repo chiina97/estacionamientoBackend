@@ -1,10 +1,12 @@
 package sem.serviceImpl;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import sem.dto.ParkingDTO;
 import sem.dto.TimePriceDTO;
 import sem.model.City;
 import sem.model.History;
@@ -26,6 +28,10 @@ public class ParkingService implements IParking {
 
 	@Autowired
 	CityRepository cityRepo;
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -71,7 +77,9 @@ public class ParkingService implements IParking {
 			parking.get().setUser(p.getUser());
 			parking.get().setStartTime(p.getStartTime());
 
-			TimePriceDTO timePrice=parking.get().getCurrentPaymentDetails(city.get());
+			// convert entity to DTO
+			ParkingDTO parkingResponse = modelMapper.map(parking.get(), ParkingDTO.class);
+			TimePriceDTO timePrice=parkingResponse.getCurrentPaymentDetails(city.get());
 			parking.get().setAmount(timePrice.getPrice());
 
 		

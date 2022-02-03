@@ -2,6 +2,7 @@ package sem.controller;
 
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import sem.dto.Message;
+import sem.dto.ParkingDTO;
 import sem.dto.TimePriceDTO;
 import sem.model.City;
 import sem.model.Holiday;
@@ -45,28 +47,37 @@ public class ParkingController {
 	
 	@Autowired
 	private MessageSource msg;
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody Parking parking) {
-		Parking startedParking = parkingService.findByPatentStarted(parking.getPatent());
+	public ResponseEntity<?> create(@RequestBody ParkingDTO parkingDTO) {
+		// convert DTO to entity
+		Parking parkingRequest = modelMapper.map(parkingDTO, Parking.class);
+		
+		Parking startedParking = parkingService.findByPatentStarted(parkingRequest.getPatent());
 		if (startedParking != null) {
 			return new ResponseEntity<Message>(
-					new Message(msg.getMessage("patent.parking.started", new String[]{parking.getPatent()}, LocaleContextHolder.getLocale())),
+					new Message(msg.getMessage("patent.parking.started", new String[]{parkingRequest.getPatent()}, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		} else {
 
 			Optional<City> city = cityService.findById(Long.parseLong("1"));
-			Optional<User> user = userService.findById(parking.getUser().getId());
+			Optional<User> user = userService.findById(parkingRequest.getUser().getId());
 			Iterable<Holiday> holidays = holidayService.findAll();
 
-			Message result = Parking.validations(city.get(), holidays);
+			// convert entity to DTO
+			ParkingDTO parkingResponse = modelMapper.map(parkingRequest, ParkingDTO.class);
+			parkingResponse.setMsg(msg);
+
+			Message result = parkingResponse.validations(city.get(), holidays);
 			// saldo de cuenta:
 			double accountBalance = user.get().getCurrentAccount().getBalance();
 
 			if (accountBalance >= city.get().getValueByHour()) {
 				if (result == null) {
-					parkingService.save(parking);
-					return new ResponseEntity<Parking>(parking, HttpStatus.CREATED);
+					parkingService.save(parkingRequest);
+					return new ResponseEntity<Parking>(parkingRequest, HttpStatus.CREATED);
 				}
 
 				else
@@ -95,19 +106,25 @@ public class ParkingController {
 			return new ResponseEntity<Parking>(HttpStatus.NOT_FOUND);
 
 		} else {
-
+			// convert entity to DTO
+			ParkingDTO parkingResponse = modelMapper.map(parking.get(), ParkingDTO.class);
+			
 			Optional<City> city = cityService.findById(Long.parseLong("1"));
 			Iterable<Holiday> holidays = holidayService.findAll();
-			Message msg = Parking.validations(city.get(), holidays);
+			Message result = parkingResponse.validations(city.get(), holidays);
 
-			if (msg == null) {
+			if (result == null) {
 
 				parking.get().setStartedParking(false);
 				parkingService.updateAmount(parking.get(), parking.get().getId());
-
-				return new ResponseEntity<Parking>(parking.get(), HttpStatus.OK);
+				
+				String monto=String.valueOf(parking.get().getAmount());
+				
+				return new ResponseEntity<Message>(
+						new Message(msg.getMessage("parking.balace.acredit", new String[]{monto}, LocaleContextHolder.getLocale())),
+						HttpStatus.OK);
 			} else
-				return new ResponseEntity<Message>(msg, HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<Message>(result, HttpStatus.BAD_REQUEST);
 		}
 
 	}
@@ -134,7 +151,10 @@ public class ParkingController {
 			if(queryResult.isEmpty()) {	
 				return null;
 			}else {
-				TimePriceDTO data = queryResult.get().getCurrentPaymentDetails(city.get());
+				// convert entity to DTO
+				ParkingDTO parkingResponse = modelMapper.map(queryResult.get(), ParkingDTO.class);
+				
+				TimePriceDTO data = parkingResponse.getCurrentPaymentDetails(city.get());
 				return data;
 			}
 			
@@ -155,4 +175,5 @@ public class ParkingController {
 
 	}
 
+	
 }

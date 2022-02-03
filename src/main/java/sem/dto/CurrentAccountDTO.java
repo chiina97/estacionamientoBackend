@@ -16,11 +16,11 @@ public class CurrentAccountDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	@NotNull(message = "{phone.notNull}")
-	@Size(min = 10, max = 10, message = "{phone.notSize}")
-	@Pattern(regexp = "[0-9]+", message = "{phone.notValid}")
+	@NotNull(message = "{user.phone.notNull}")
+	@Size(min = 10, max = 10, message = "{user.phone.notSize}")
+	@Pattern(regexp = "[0-9]+", message = "{user.phone.notNumber}")
 	private String phone;
-	@NotNull(message = "{balance.notNull}")
+	@NotNull(message = "{currentAccount.balance.notNull}")
 	@DecimalMin("100")
 	private double balance;
 	@JsonIgnore
