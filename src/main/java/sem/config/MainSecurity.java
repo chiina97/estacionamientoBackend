@@ -61,7 +61,11 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/user").permitAll()
-                .antMatchers("/user/authenticate").permitAll()
+                .antMatchers("/user/authenticate",
+                		"/v2/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/configuration/**").permitAll()
                 .antMatchers("/user/refresh").permitAll()
                 .antMatchers("/city/**").permitAll()
                 .anyRequest().authenticated()

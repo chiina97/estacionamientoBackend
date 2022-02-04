@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import sem.model.Holiday;
 import sem.serviceImpl.HolidayService;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -24,6 +25,7 @@ public class HolidayController {
 	@Autowired
 	HolidayService holidayService;
 
+	@ApiIgnore
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody Holiday holiday) {
 
@@ -32,6 +34,7 @@ public class HolidayController {
 		return new ResponseEntity<Holiday>(holiday, HttpStatus.CREATED);
 	}
 
+	@ApiIgnore
 	@GetMapping(path = "/{date}")
 	public boolean isWorkingDate(@PathVariable("date") String date) {
 		String formattedDate = date.split("-")[0] + "/" + date.split("-")[1];
