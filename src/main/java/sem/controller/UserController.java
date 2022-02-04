@@ -181,8 +181,10 @@ public class UserController {
 
 		Optional<User> user = userService.findByPhone(accountDTO.getPhone());
 
+		double amount=accountDTO.getBalance();
+		//actualizo la cuenta:
 		user.get().getCurrentAccount()
-				.setBalance(user.get().getCurrentAccount().getBalance() + accountDTO.getBalance());
+				.setBalance(user.get().getCurrentAccount().getBalance() + amount);
 
 		if (user.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -193,7 +195,10 @@ public class UserController {
 			History history = new History("Carga", accountDTO.getBalance(), user.get().getCurrentAccount().getBalance(),
 					user.get().getCurrentAccount());
 			historyController.create(history);
-			return new ResponseEntity<Message>(new Message(msg.getMessage("user.update.amount", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+			
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("user.update.amount", new String[]{String.valueOf(amount)}, LocaleContextHolder.getLocale())),
+					HttpStatus.OK);
 		}
 
 	}
