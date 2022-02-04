@@ -18,7 +18,7 @@ import java.util.List;
 public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean
-    public Docket api(){
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .securityContexts(Arrays.asList(securityContext()))
@@ -29,22 +29,22 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .build();
     }
 
-    private ApiKey apiKey(){
+    private ApiKey apiKey() {
         return new ApiKey("JWT", "Authorization", "header");
     }
 
-    private SecurityContext securityContext(){
+    private SecurityContext securityContext() {
         return SecurityContext.builder().securityReferences(defaultAuth()).build();
     }
 
-    private List<SecurityReference> defaultAuth(){
+    private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfo(
                 "SEM APIS",
                 "Description",
@@ -53,7 +53,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 new Contact("Yajaira Quipusco", "", "yquipusco@cespi.unlp.edu.ar"),
                 "Cespi",
                 "https://www.cespi.unlp.edu.ar/",
-                Collections.emptyList()
-        );
+                Collections.emptyList());
     }
 }

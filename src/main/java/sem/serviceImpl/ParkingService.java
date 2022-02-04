@@ -1,4 +1,5 @@
 package sem.serviceImpl;
+
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -28,10 +29,9 @@ public class ParkingService implements IParking {
 
 	@Autowired
 	CityRepository cityRepo;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -49,10 +49,10 @@ public class ParkingService implements IParking {
 	public Parking findByPatentStarted(String patente) {
 		return parkingRepo.findByPatentStarted(patente);
 	}
-	
+
 	public boolean parkingStartedWithPatent(String patent, Long userId) {
-		//return -> true -> hay un estacionamiento iniciado con esa patente.
-		return !parkingRepo.getParkingStartedWithPatent(patent,userId).isEmpty();
+		// return -> true -> hay un estacionamiento iniciado con esa patente.
+		return !parkingRepo.getParkingStartedWithPatent(patent, userId).isEmpty();
 	}
 
 	@Transactional(readOnly = true)
@@ -79,10 +79,9 @@ public class ParkingService implements IParking {
 
 			// convert entity to DTO
 			ParkingDTO parkingResponse = modelMapper.map(parking.get(), ParkingDTO.class);
-			TimePriceDTO timePrice=parkingResponse.getCurrentPaymentDetails(city.get());
+			TimePriceDTO timePrice = parkingResponse.getCurrentPaymentDetails(city.get());
 			parking.get().setAmount(timePrice.getPrice());
 
-		
 			parking.get().setStartedParking(p.isStartedParking());
 
 			User user = parking.get().getUser();

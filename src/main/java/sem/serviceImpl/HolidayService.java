@@ -19,8 +19,8 @@ public class HolidayService implements IHoliday {
 
 	@Override
 	@Transactional(readOnly = true)
-	public  ArrayList<Holiday>  findAll() {
-		return  (ArrayList<Holiday>)holidayRepo.findAll();
+	public ArrayList<Holiday> findAll() {
+		return (ArrayList<Holiday>) holidayRepo.findAll();
 	}
 
 	@Override

@@ -22,13 +22,14 @@ public class RoleService {
     public Optional<Role> getByRoleName(RoleName roleName) {
         return roleRepository.findByRoleName(roleName);
     }
+
     @Transactional
     public void save(Role rol) {
         roleRepository.save(rol);
     }
-    
+
     @Transactional(readOnly = true)
-	public  ArrayList<Role>  findAll() {
-		return  (ArrayList<Role>)roleRepository.findAll();
-	}
+    public ArrayList<Role> findAll() {
+        return (ArrayList<Role>) roleRepository.findAll();
+    }
 }

@@ -53,5 +53,4 @@ public class CityDTO implements Serializable {
 		this.valueByHour = valueByHour;
 	}
 
-
 }

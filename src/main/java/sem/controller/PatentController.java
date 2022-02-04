@@ -45,7 +45,7 @@ public class PatentController {
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private MessageSource msg;
 
@@ -66,7 +66,8 @@ public class PatentController {
 
 		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
 			return new ResponseEntity<Message>(
-					new Message(msg.getMessage("patent.existPatent", new String[]{patentDTO.getPatent()}, LocaleContextHolder.getLocale())),
+					new Message(msg.getMessage("patent.existPatent", new String[] { patentDTO.getPatent() },
+							LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -79,7 +80,8 @@ public class PatentController {
 
 		patentService.save(patentRequest);
 
-		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+		return new ResponseEntity<Message>(
+				new Message(msg.getMessage("patent.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 	}
 
 	// Read an patent
@@ -110,16 +112,19 @@ public class PatentController {
 		}
 		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
 			return new ResponseEntity<Message>(
-					new Message(msg.getMessage("patent.existPatent", new String[]{patentDTO.getPatent()}, LocaleContextHolder.getLocale())),
+					new Message(msg.getMessage("patent.existPatent", new String[] { patentDTO.getPatent() },
+							LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
-		Optional<Patent>patentOriginal=patentService.findById(patentId);
-        
-		Boolean startedPatent=parkingService.parkingStartedWithPatent(patentOriginal.get().getPatent(),patentOriginal.get().getUser().getId());
-		//si existe la patente iniciada para ese usuario
-		if(startedPatent){
-    		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update.parking.started",
-    										new String[]{patentOriginal.get().getPatent()}, LocaleContextHolder.getLocale())), HttpStatus.BAD_REQUEST);
+		Optional<Patent> patentOriginal = patentService.findById(patentId);
+
+		Boolean startedPatent = parkingService.parkingStartedWithPatent(patentOriginal.get().getPatent(),
+				patentOriginal.get().getUser().getId());
+		// si existe la patente iniciada para ese usuario
+		if (startedPatent) {
+			return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update.parking.started",
+					new String[] { patentOriginal.get().getPatent() }, LocaleContextHolder.getLocale())),
+					HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to Entity
 		Patent patentRequest = modelMapper.map(patentDTO, Patent.class);
@@ -133,8 +138,10 @@ public class PatentController {
 		if (patent == null) {
 			return ResponseEntity.notFound().build();
 		} else {
-			
-			return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update", null, LocaleContextHolder.getLocale())), HttpStatus.CREATED);
+
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("patent.update", null, LocaleContextHolder.getLocale())),
+					HttpStatus.CREATED);
 		}
 
 	}
@@ -142,12 +149,15 @@ public class PatentController {
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable(value = "id") Long patentId) {
-		Optional<Patent>patent=patentService.findById(patentId);
-		if(this.parkingService.parkingStartedWithPatent(patent.get().getPatent(),patent.get().getUser().getId())) 
-    		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.delete.parking.started", new String[]{patent.get().getPatent()}, LocaleContextHolder.getLocale())), HttpStatus.BAD_REQUEST);
+		Optional<Patent> patent = patentService.findById(patentId);
+		if (this.parkingService.parkingStartedWithPatent(patent.get().getPatent(), patent.get().getUser().getId()))
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("patent.delete.parking.started",
+							new String[] { patent.get().getPatent() }, LocaleContextHolder.getLocale())),
+					HttpStatus.BAD_REQUEST);
 		patentService.deleteById(patentId);
-		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.delete", new String[]{patent.get().getPatent()}, LocaleContextHolder.getLocale())) , HttpStatus.OK);
-		
+		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.delete",
+				new String[] { patent.get().getPatent() }, LocaleContextHolder.getLocale())), HttpStatus.OK);
 
 	}
 

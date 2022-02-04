@@ -11,7 +11,7 @@ import sem.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     // para el token;
     Optional<User> findByPhone(String phone);
-    
+
     boolean existsByPhone(String Phone);
 
     boolean existsByMail(String mail);

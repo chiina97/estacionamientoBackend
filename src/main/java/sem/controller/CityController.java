@@ -36,7 +36,7 @@ public class CityController {
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private MessageSource msg;
 
@@ -44,7 +44,7 @@ public class CityController {
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody CityDTO cityDTO, BindingResult result) {
 		// validaciones:
-	
+
 		if (result.hasErrors()) {
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
@@ -55,7 +55,8 @@ public class CityController {
 
 		cityService.save(cityRequest);
 
-		return new ResponseEntity<Message>(new Message(msg.getMessage("city.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+		return new ResponseEntity<Message>(
+				new Message(msg.getMessage("city.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 	}
 
 	// Read all citys
@@ -96,8 +97,10 @@ public class CityController {
 		if (city == null) {
 			return ResponseEntity.notFound().build();
 		} else {
-			
-			return new ResponseEntity<Message>(new Message(msg.getMessage("city.update", null, LocaleContextHolder.getLocale())), HttpStatus.CREATED);
+
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("city.update", null, LocaleContextHolder.getLocale())),
+					HttpStatus.CREATED);
 		}
 
 	}

@@ -52,8 +52,6 @@ public class User {
 	public User() {
 	}
 
-	
-
 	public User(String password, String mail, String phone, String username) {
 		super();
 		this.password = password;
@@ -61,8 +59,6 @@ public class User {
 		this.phone = phone;
 		this.username = username;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -128,5 +124,4 @@ public class User {
 		this.username = username;
 	}
 
-	
 }

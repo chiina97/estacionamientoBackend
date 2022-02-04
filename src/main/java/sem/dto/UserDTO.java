@@ -98,7 +98,6 @@ public class UserDTO implements Serializable {
 	public void setCurrentAccount(CurrentAccountDTO currentAccounts) {
 		this.currentAccount = currentAccounts;
 	}
-	
 
 	public String getUsername() {
 		return username;

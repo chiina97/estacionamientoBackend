@@ -79,11 +79,13 @@ public class UserController {
 					HttpStatus.BAD_REQUEST);
 		}
 		if (userService.existsByPhone(userDTO.getPhone())) {
-			return new ResponseEntity<Message>(new Message(msg.getMessage("user.existPhone", null, LocaleContextHolder.getLocale())),
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("user.existPhone", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 		if (userService.existsByMail(userDTO.getMail())) {
-			return new ResponseEntity<Message>(new Message(msg.getMessage("user.existEmail", null, LocaleContextHolder.getLocale())),
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("user.existEmail", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 		// convert DTO to entity
@@ -91,7 +93,7 @@ public class UserController {
 
 		// creo un user con la pass hasheada
 		User user = new User(passwordEncoder.encode(userRequest.getPassword()), userRequest.getMail(),
-				userRequest.getPhone(),userRequest.getUsername());
+				userRequest.getPhone(), userRequest.getUsername());
 
 		// agrego rol y guardo el user
 		Set<Role> roles = new HashSet<>();
@@ -111,7 +113,8 @@ public class UserController {
 		UserDTO userResponse = modelMapper.map(user, UserDTO.class);
 		userResponse.setCurrentAccount(accountReponse);
 
-		return new ResponseEntity<Message>(new Message(msg.getMessage("user.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+		return new ResponseEntity<Message>(
+				new Message(msg.getMessage("user.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 
 	}
 
@@ -119,7 +122,8 @@ public class UserController {
 	public ResponseEntity<?> authenticate(@Valid @RequestBody LoginDTO loginDto, BindingResult result) {
 		// validaciones:
 		if (result.hasErrors()) {
-			return new ResponseEntity<Message>(new Message(msg.getMessage("user.notValid", null, LocaleContextHolder.getLocale())),
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("user.notValid", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -181,8 +185,8 @@ public class UserController {
 
 		Optional<User> user = userService.findByPhone(accountDTO.getPhone());
 
-		double amount=accountDTO.getBalance();
-		//actualizo la cuenta:
+		double amount = accountDTO.getBalance();
+		// actualizo la cuenta:
 		user.get().getCurrentAccount()
 				.setBalance(user.get().getCurrentAccount().getBalance() + amount);
 
@@ -195,9 +199,10 @@ public class UserController {
 			History history = new History("Carga", accountDTO.getBalance(), user.get().getCurrentAccount().getBalance(),
 					user.get().getCurrentAccount());
 			historyController.create(history);
-			
+
 			return new ResponseEntity<Message>(
-					new Message(msg.getMessage("user.update.amount", new String[]{String.valueOf(amount)}, LocaleContextHolder.getLocale())),
+					new Message(msg.getMessage("user.update.amount", new String[] { String.valueOf(amount) },
+							LocaleContextHolder.getLocale())),
 					HttpStatus.OK);
 		}
 

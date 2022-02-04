@@ -43,13 +43,12 @@ public class CreateData implements CommandLineRunner {
 
     // creo los roles:
 
-	if(roleService.findAll().isEmpty()) {
-		Role roleUser = new Role(RoleName.ROLE_USER);
-	    roleService.save(roleUser);
-	}
-      
+    if (roleService.findAll().isEmpty()) {
+      Role roleUser = new Role(RoleName.ROLE_USER);
+      roleService.save(roleUser);
+    }
 
-    //si no tiene una ciudad creo la city
+    // si no tiene una ciudad creo la city
     List<City> listcitys = (List<City>) cityService.findAll();
     if (listcitys.isEmpty()) {
       City city = new City("8:00", "12:00", 10);
@@ -59,15 +58,13 @@ public class CreateData implements CommandLineRunner {
 
     // si no esta cargado la lista de feriado la carga:
     String listHolidays = "01/01,28/02,01/03,24/03,02/04,15/04,01/05,25/05,20/06,09/07,08/12,25/12,17/06,15/08,10/10,20/11,07/10,21/11,09/12";
-    ArrayList<Holiday> listH=holidayService.findAll(); 
+    ArrayList<Holiday> listH = holidayService.findAll();
     if (listH.isEmpty()) {
       String[] list = listHolidays.split((","));
       for (String elem : list) {
-         holidayService.save(new Holiday(elem));
+        holidayService.save(new Holiday(elem));
       }
     }
-    
-    
 
   }
 }

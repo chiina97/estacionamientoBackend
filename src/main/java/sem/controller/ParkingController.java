@@ -44,7 +44,7 @@ public class ParkingController {
 	CityService cityService;
 	@Autowired
 	HolidayService holidayService;
-	
+
 	@Autowired
 	private MessageSource msg;
 	@Autowired
@@ -54,11 +54,13 @@ public class ParkingController {
 	public ResponseEntity<?> create(@RequestBody ParkingDTO parkingDTO) {
 		// convert DTO to entity
 		Parking parkingRequest = modelMapper.map(parkingDTO, Parking.class);
-		
+
 		Parking startedParking = parkingService.findByPatentStarted(parkingRequest.getPatent());
+
 		if (startedParking != null) {
 			return new ResponseEntity<Message>(
-					new Message(msg.getMessage("patent.parking.started", new String[]{parkingRequest.getPatent()}, LocaleContextHolder.getLocale())),
+					new Message(msg.getMessage("patent.parking.started", new String[] { parkingRequest.getPatent() },
+							LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		} else {
 
@@ -83,7 +85,9 @@ public class ParkingController {
 				else
 					return new ResponseEntity<Message>(result, HttpStatus.BAD_REQUEST);
 			} else
-				return new ResponseEntity<Message>(new Message(msg.getMessage("currentAccount.balance.insufficient", null, LocaleContextHolder.getLocale())),
+				return new ResponseEntity<Message>(
+						new Message(msg.getMessage("currentAccount.balance.insufficient", null,
+								LocaleContextHolder.getLocale())),
 						HttpStatus.BAD_REQUEST);
 
 		}
@@ -108,7 +112,7 @@ public class ParkingController {
 		} else {
 			// convert entity to DTO
 			ParkingDTO parkingResponse = modelMapper.map(parking.get(), ParkingDTO.class);
-			
+
 			Optional<City> city = cityService.findById(Long.parseLong("1"));
 			Iterable<Holiday> holidays = holidayService.findAll();
 			Message result = parkingResponse.validations(city.get(), holidays);
@@ -117,11 +121,12 @@ public class ParkingController {
 
 				parking.get().setStartedParking(false);
 				parkingService.updateAmount(parking.get(), parking.get().getId());
-				
-				String monto=String.valueOf(parking.get().getAmount());
-				
+
+				String monto = String.valueOf(parking.get().getAmount());
+
 				return new ResponseEntity<Message>(
-						new Message(msg.getMessage("parking.balace.acredit", new String[]{monto}, LocaleContextHolder.getLocale())),
+						new Message(msg.getMessage("parking.balace.acredit", new String[] { monto },
+								LocaleContextHolder.getLocale())),
 						HttpStatus.OK);
 			} else
 				return new ResponseEntity<Message>(result, HttpStatus.BAD_REQUEST);
@@ -140,26 +145,26 @@ public class ParkingController {
 		}
 
 	}
-	 @GetMapping("/getTime/{id}")
-	    public TimePriceDTO getTime(@PathVariable("id") Long id){
-			//retorna en milisegundos el tiempo transcurrido.
-			
-			Optional<User> user = this.userService.findById(id);
-			Optional<Parking> queryResult = parkingService.findStartedParkingBy(user.get().getId());
-			Optional<City> city = cityService.findById(Long.parseLong("1"));
-			
-			if(queryResult.isEmpty()) {	
-				return null;
-			}else {
-				// convert entity to DTO
-				ParkingDTO parkingResponse = modelMapper.map(queryResult.get(), ParkingDTO.class);
-				
-				TimePriceDTO data = parkingResponse.getCurrentPaymentDetails(city.get());
-				return data;
-			}
-			
-	    }
-	
+
+	@GetMapping("/getTime/{id}")
+	public TimePriceDTO getTime(@PathVariable("id") Long id) {
+		// retorna en milisegundos el tiempo transcurrido.
+
+		Optional<User> user = this.userService.findById(id);
+		Optional<Parking> queryResult = parkingService.findStartedParkingBy(user.get().getId());
+		Optional<City> city = cityService.findById(Long.parseLong("1"));
+
+		if (queryResult.isEmpty()) {
+			return null;
+		} else {
+			// convert entity to DTO
+			ParkingDTO parkingResponse = modelMapper.map(queryResult.get(), ParkingDTO.class);
+
+			TimePriceDTO data = parkingResponse.getCurrentPaymentDetails(city.get());
+			return data;
+		}
+
+	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> update(@RequestBody Parking parking, @PathVariable(value = "id") Long parkingId) {
@@ -175,5 +180,4 @@ public class ParkingController {
 
 	}
 
-	
 }
