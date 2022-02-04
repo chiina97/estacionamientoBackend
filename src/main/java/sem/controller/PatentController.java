@@ -25,7 +25,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 import sem.dto.Message;
 import sem.dto.PatentDTO;
-import sem.model.Parking;
 import sem.model.Patent;
 import sem.model.User;
 import sem.serviceImpl.ParkingService;
@@ -109,9 +108,16 @@ public class PatentController {
 					HttpStatus.BAD_REQUEST);
 
 		}
+		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
+			return new ResponseEntity<Message>(
+					new Message(msg.getMessage("patent.existPatent", new String[]{patentDTO.getPatent()}, LocaleContextHolder.getLocale())),
+					HttpStatus.BAD_REQUEST);
+		}
 		Optional<Patent>patentOriginal=patentService.findById(patentId);
-        Parking startedPatent=parkingService.findByPatentStarted(patentOriginal.get().getPatent());
-		if(startedPatent!=null){
+        
+		Boolean startedPatent=parkingService.parkingStartedWithPatent(patentOriginal.get().getPatent(),patentOriginal.get().getUser().getId());
+		//si existe la patente iniciada para ese usuario
+		if(startedPatent){
     		return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update.parking.started",
     										new String[]{patentOriginal.get().getPatent()}, LocaleContextHolder.getLocale())), HttpStatus.BAD_REQUEST);
 		}
