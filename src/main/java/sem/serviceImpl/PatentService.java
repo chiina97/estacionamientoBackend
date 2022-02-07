@@ -57,7 +57,7 @@ public class PatentService implements IPatent {
 	public Patent update(Patent patentRequest, Long id) {
 		Optional<Patent> patent = patentRepo.findById(id);
 		if (patent.isPresent()) {
-			patent.get().setPatent(patentRequest.getPatent());
+			patentRequest.setPatent(patentRequest.getPatent());
 			patent.get().setUser(patentRequest.getUser());
 			return patentRepo.save(patent.get());
 		} else

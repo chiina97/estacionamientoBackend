@@ -77,6 +77,7 @@ public class PatentController {
 		// acá deberia pasarle el id del User a partir de su token:
 		Optional<User> idUser = userService.findById(patentRequest.getUser().getId());
 		patentRequest.setUser(idUser.get());
+		patentRequest.setPatent(patentRequest.getPatent().toUpperCase());
 
 		patentService.save(patentRequest);
 
@@ -132,6 +133,7 @@ public class PatentController {
 		// busco el User y asocio la relacion
 		Optional<User> idUser = userService.findById(patentRequest.getUser().getId());
 		patentRequest.setUser(idUser.get());
+		patentRequest.setPatent(patentRequest.getPatent().toUpperCase());
 
 		Patent patent = patentService.update(patentRequest, patentId);
 
