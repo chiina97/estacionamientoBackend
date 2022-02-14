@@ -1,6 +1,8 @@
 package sem;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
@@ -10,6 +12,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SpringBootApplication
 public class SemApplication {
+
+	
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
@@ -33,6 +37,13 @@ public class SemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SemApplication.class, args);
+
+		Logger logger = LoggerFactory.getLogger(SemApplication.class);
+
+	      logger.debug("Debug Message Logged !!!");
+	      logger.info("Info Message Logged !!!");
+	      logger.error("Error Message Logged !!!");
+
 	}
 
 }

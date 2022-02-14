@@ -32,6 +32,7 @@ public class ParkingService implements IParking {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -90,7 +91,7 @@ public class ParkingService implements IParking {
 
 			userService.updateAccount(user);
 
-			History h = new History("Consumo", parking.get().getAmount(), user.getCurrentAccount().getBalance(),
+			History h = new History("Credit consumption", parking.get().getAmount(), user.getCurrentAccount().getBalance(),
 					user.getCurrentAccount());
 			historyService.save(h);
 			return parkingRepo.save(parking.get());

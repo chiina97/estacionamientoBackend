@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,6 +38,9 @@ import sem.serviceImpl.UserService;
 @RequestMapping(value = "/patent", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class PatentController {
+	
+	private Logger logger = LoggerFactory.getLogger(PatentController.class);
+	
 	@Autowired
 	private PatentService patentService;
 	@Autowired
@@ -52,6 +57,7 @@ public class PatentController {
 	// Read all patents
 	@GetMapping("/user/{id}")
 	public ResponseEntity<Iterable<Patent>> getPatentsOfUser(@PathVariable(value = "id") Long userId) {
+		this.logger.debug("executing PatentController._getPatentsOfUser()");
 		return ResponseEntity.ok(patentService.findAllByUser(userId));
 
 	}

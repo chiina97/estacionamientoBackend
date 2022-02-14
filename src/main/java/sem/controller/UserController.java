@@ -8,6 +8,8 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,9 @@ import sem.serviceImpl.UserService;
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class UserController {
+	
+	private Logger logger = LoggerFactory.getLogger(UserController.class);
+	
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -71,6 +76,8 @@ public class UserController {
 
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
+		
+		this.logger.debug("executing UserController._create()");
 
 		// validaciones:
 
@@ -120,6 +127,7 @@ public class UserController {
 
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticate(@Valid @RequestBody LoginDTO loginDto, BindingResult result) {
+		this.logger.debug("executing UserController._authenticathe()");
 		// validaciones:
 		if (result.hasErrors()) {
 			return new ResponseEntity<Message>(
@@ -141,12 +149,14 @@ public class UserController {
 	// Read all users
 	@GetMapping
 	public ResponseEntity<Iterable<User>> getAll() {
+		this.logger.debug("executing UserController._getAll()");
 		return ResponseEntity.ok(userService.findAll());
 	}
 
 	// Read an user
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDTO> findById(@PathVariable(value = "id") Long userId) {
+		this.logger.debug("executing UserController._findById()");
 		Optional<User> user = userService.findById(userId);
 
 		// convert entity to DTO
@@ -161,6 +171,7 @@ public class UserController {
 
 	@GetMapping("/currentAccount/{id}")
 	public ResponseEntity<?> findCurrentAccountById(@PathVariable(value = "id") Long userId) {
+		this.logger.debug("executing UserController._findCurrentAccountById()");
 		Optional<User> user = userService.findById(userId);
 
 		// convert entity to DTO
@@ -177,6 +188,8 @@ public class UserController {
 	@PutMapping("/account/{id}")
 	public ResponseEntity<?> updateAmount(@Valid @RequestBody CurrentAccountDTO accountDTO, BindingResult result,
 			@PathVariable(value = "id") Long userId) {
+		
+		this.logger.debug("executing UserController._updateAmount()");
 		// validaciones:
 		if (result.hasErrors()) {
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
@@ -193,10 +206,10 @@ public class UserController {
 		if (user.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		} else {
-			// si todo sale bien informe exitosamente el resultado
+			// si todo sale bien debugrme exitosamente el resultado
 			userService.updateAccount(user.get());
 
-			History history = new History("Carga", accountDTO.getBalance(), user.get().getCurrentAccount().getBalance(),
+			History history = new History("Credit Load", accountDTO.getBalance(), user.get().getCurrentAccount().getBalance(),
 					user.get().getCurrentAccount());
 			historyController.create(history);
 
@@ -210,6 +223,7 @@ public class UserController {
 
 	@PostMapping("/refresh")
 	public ResponseEntity<JwtDTO> refresh(@RequestBody JwtDTO jwtDto) throws ParseException {
+		this.logger.debug("executing UserController._refresh()");
 		String token = jwtProvider.refreshToken(jwtDto);
 		JwtDTO jwt = new JwtDTO(token);
 		return new ResponseEntity<JwtDTO>(jwt, HttpStatus.OK);
