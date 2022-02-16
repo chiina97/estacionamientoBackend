@@ -40,9 +40,7 @@ public class SemApplication {
 
 		Logger logger = LoggerFactory.getLogger(SemApplication.class);
 
-	      logger.debug("Debug Message Logged !!!");
-	      logger.info("Info Message Logged !!!");
-	      logger.error("Error Message Logged !!!");
+	      logger.debug("executing SemApplication._main()");
 
 	}
 

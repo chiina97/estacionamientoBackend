@@ -76,21 +76,24 @@ public class UserController {
 
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
-		
 		this.logger.debug("executing UserController._create()");
+		try {
 
 		// validaciones:
 
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
 		if (userService.existsByPhone(userDTO.getPhone())) {
+			this.logger.debug("There is a user with the same phone:");
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("user.existPhone", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
 		}
-		if (userService.existsByMail(userDTO.getMail())) {
+		if (userService.existsByMail(userDTO.getMail())){
+			this.logger.debug("There is a user with the same mail:");
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("user.existEmail", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
@@ -123,13 +126,23 @@ public class UserController {
 		return new ResponseEntity<Message>(
 				new Message(msg.getMessage("user.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
 
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
+		
 	}
 
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticate(@Valid @RequestBody LoginDTO loginDto, BindingResult result) {
 		this.logger.debug("executing UserController._authenticathe()");
+		try {
 		// validaciones:
 		if (result.hasErrors()) {
+			this.logger.debug("the username/password is incorrect:");
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("user.notValid", null, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
@@ -143,45 +156,79 @@ public class UserController {
 		JwtDTO jwtDto = new JwtDTO(jwt);
 
 		return new ResponseEntity<JwtDTO>(jwtDto, HttpStatus.OK);
-
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
+		
 	}
 
 	// Read all users
 	@GetMapping
-	public ResponseEntity<Iterable<User>> getAll() {
+	public ResponseEntity<?> getAll() {
 		this.logger.debug("executing UserController._getAll()");
-		return ResponseEntity.ok(userService.findAll());
+		try {
+			return ResponseEntity.ok(userService.findAll());
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Read an user
 	@GetMapping("/{id}")
-	public ResponseEntity<UserDTO> findById(@PathVariable(value = "id") Long userId) {
+	public ResponseEntity<?> findById(@PathVariable(value = "id") Long userId) {
 		this.logger.debug("executing UserController._findById()");
+		try {
 		Optional<User> user = userService.findById(userId);
 
 		// convert entity to DTO
 		UserDTO userResponse = modelMapper.map(user.get(), UserDTO.class);
 		if (user.isPresent()) {
+			this.logger.debug("the user with that id exists"); 
 			return ResponseEntity.ok(userResponse);
 		} else {
+			this.logger.debug("The user with that id does not exist");
 			return ResponseEntity.notFound().build();
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 
 	@GetMapping("/currentAccount/{id}")
 	public ResponseEntity<?> findCurrentAccountById(@PathVariable(value = "id") Long userId) {
 		this.logger.debug("executing UserController._findCurrentAccountById()");
+		try {
 		Optional<User> user = userService.findById(userId);
 
 		// convert entity to DTO
 		UserDTO userResponse = modelMapper.map(user.get(), UserDTO.class);
 		if (user.isPresent()) {
+			this.logger.debug("the user with that id exists"); 
 			return ResponseEntity.ok(userResponse.getCurrentAccount());
 		} else {
+			this.logger.debug("The user with that id does not exist");
 			return ResponseEntity.notFound().build();
 		}
-
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Update an User
@@ -190,8 +237,10 @@ public class UserController {
 			@PathVariable(value = "id") Long userId) {
 		
 		this.logger.debug("executing UserController._updateAmount()");
+		try {
 		// validaciones:
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -204,8 +253,10 @@ public class UserController {
 				.setBalance(user.get().getCurrentAccount().getBalance() + amount);
 
 		if (user.isEmpty()) {
+			this.logger.debug("The user with that account does not exist"); 
 			return ResponseEntity.notFound().build();
 		} else {
+			this.logger.debug("the user with that account exists"); 
 			// si todo sale bien debugrme exitosamente el resultado
 			userService.updateAccount(user.get());
 
@@ -218,15 +269,30 @@ public class UserController {
 							LocaleContextHolder.getLocale())),
 					HttpStatus.OK);
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<JwtDTO> refresh(@RequestBody JwtDTO jwtDto) throws ParseException {
+	public ResponseEntity<?> refresh(@RequestBody JwtDTO jwtDto) throws ParseException {
 		this.logger.debug("executing UserController._refresh()");
+		try {
 		String token = jwtProvider.refreshToken(jwtDto);
 		JwtDTO jwt = new JwtDTO(token);
 		return new ResponseEntity<JwtDTO>(jwt, HttpStatus.OK);
-	}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
+		}
 
 }

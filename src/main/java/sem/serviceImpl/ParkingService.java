@@ -3,6 +3,8 @@ package sem.serviceImpl;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,9 @@ import sem.service.IParking;
 
 @Service
 public class ParkingService implements IParking {
+	
+	private Logger logger = LoggerFactory.getLogger(ParkingService.class);
+	
 	@Autowired
 	ParkingRepository parkingRepo;
 	@Autowired
@@ -68,8 +73,9 @@ public class ParkingService implements IParking {
 	}
 
 	@Override
-	@Transactional // no se usa
+	@Transactional
 	public Parking updateAmount(Parking p, Long id) {
+		this.logger.debug("executing ParkingService._updateAmount()");
 		Optional<Parking> parking = parkingRepo.findById(id);
 		Optional<City> city = cityRepo.findById(Long.valueOf(1));
 

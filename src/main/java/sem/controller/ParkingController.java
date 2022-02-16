@@ -3,6 +3,8 @@ package sem.controller;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,8 @@ import sem.serviceImpl.UserService;
 @RequestMapping(value = "/parking", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ParkingController {
 
+	private Logger logger = LoggerFactory.getLogger(ParkingController.class);
+	
 	@Autowired
 	ParkingService parkingService;
 	@Autowired
@@ -52,6 +55,8 @@ public class ParkingController {
 
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody ParkingDTO parkingDTO) {
+		this.logger.debug("executing ParkingController._create()");
+		try {
 		// convert DTO to entity
 		Parking parkingRequest = modelMapper.map(parkingDTO, Parking.class);
 
@@ -91,20 +96,39 @@ public class ParkingController {
 						HttpStatus.BAD_REQUEST);
 
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	@GetMapping(path = "/{id}")
-	public ResponseEntity<Optional<Parking>> findById(@PathVariable("id") Long id) {
+	public ResponseEntity<?> findById(@PathVariable("id") Long id) {
 		// listo una parking por id
-
+		this.logger.debug("executing ParkingController._findById()");
+		try {
 		Optional<Parking> parking = parkingService.findById(id);
 		return new ResponseEntity<Optional<Parking>>(parking, HttpStatus.OK);
+
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	@GetMapping(path = "/finishParking/{id}")
 	public ResponseEntity<?> finishParking(@PathVariable("id") Long idUser) {
 		// listo una parking por id
 
+		this.logger.debug("executing ParkingController._finishParking()");
+		
+		try {
 		Optional<Parking> parking = parkingService.findStartedParkingBy(idUser);
 		if (parking.isEmpty()) {
 			return new ResponseEntity<Parking>(HttpStatus.NOT_FOUND);
@@ -131,12 +155,21 @@ public class ParkingController {
 			} else
 				return new ResponseEntity<Message>(result, HttpStatus.BAD_REQUEST);
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 
 	@GetMapping("/existParkingOfUser/{id}")
 	public boolean existParkingOfUser(@PathVariable("id") Long idUser) {
 		// listado de parkings
+		this.logger.debug("executing ParkingController._existParkingOfUser()");
+		
 		Optional<Parking> parking = parkingService.findStartedParkingBy(idUser);
 		if (parking.isEmpty()) {
 			return false;
@@ -150,6 +183,8 @@ public class ParkingController {
 	public TimePriceDTO getTime(@PathVariable("id") Long id) {
 		// retorna en milisegundos el tiempo transcurrido.
 
+		this.logger.debug("executing ParkingController._getTime()");
+		
 		Optional<User> user = this.userService.findById(id);
 		Optional<Parking> queryResult = parkingService.findStartedParkingBy(user.get().getId());
 		Optional<City> city = cityService.findById(Long.parseLong("1"));
@@ -166,18 +201,7 @@ public class ParkingController {
 
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<?> update(@RequestBody Parking parking, @PathVariable(value = "id") Long parkingId) {
 
-		Parking p = parkingService.updateAmount(parking, parkingId);
-
-		if (p == null) {
-			return ResponseEntity.notFound().build();
-		} else {
-
-			return new ResponseEntity<Parking>(p, HttpStatus.CREATED);
-		}
-
-	}
+	
 
 }

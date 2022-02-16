@@ -5,6 +5,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -30,6 +32,8 @@ import sem.serviceImpl.CityService;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/city", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CityController {
+	
+	private Logger logger = LoggerFactory.getLogger(CityController.class);
 
 	@Autowired
 	private CityService cityService;
@@ -45,7 +49,10 @@ public class CityController {
 	public ResponseEntity<?> create(@Valid @RequestBody CityDTO cityDTO, BindingResult result) {
 		// validaciones:
 
+		this.logger.debug("executing CityController._create()");
+		try {
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -57,17 +64,35 @@ public class CityController {
 
 		return new ResponseEntity<Message>(
 				new Message(msg.getMessage("city.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Read all citys
 	@GetMapping
-	public ResponseEntity<Iterable<City>> getAll() {
+	public ResponseEntity<?> getAll() {
+		this.logger.debug("executing CityController._getAll()");
+		try {
 		return ResponseEntity.ok(cityService.findAll());
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Read an city
 	@GetMapping("/{id}")
-	public ResponseEntity<CityDTO> getById(@PathVariable(value = "id") Long cityId) {
+	public ResponseEntity<?> getById(@PathVariable(value = "id") Long cityId) {
+		this.logger.debug("executing CityController._getById()");
+		try {
 		Optional<City> city = cityService.findById(cityId);
 
 		// convert entity to DTO
@@ -77,6 +102,13 @@ public class CityController {
 		} else {
 			return ResponseEntity.notFound().build();
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 
@@ -84,8 +116,11 @@ public class CityController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody CityDTO cityDTO, BindingResult result,
 			@PathVariable(value = "id") Long cityId) {
+		this.logger.debug("executing CityController._update()");
+		try {
 		// validaciones:
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -102,6 +137,13 @@ public class CityController {
 					new Message(msg.getMessage("city.update", null, LocaleContextHolder.getLocale())),
 					HttpStatus.CREATED);
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 

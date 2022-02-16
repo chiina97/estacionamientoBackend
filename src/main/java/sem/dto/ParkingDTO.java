@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.persistence.OneToOne;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,8 @@ import sem.model.Holiday;
 @Component
 public class ParkingDTO implements Serializable {
 
-	/**
-	 * 
-	 */
+	private Logger logger = LoggerFactory.getLogger(ParkingDTO.class);
+	
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String patent;
@@ -32,6 +33,8 @@ public class ParkingDTO implements Serializable {
 	private MessageSource msg;
 
 	public Message validations(City city, Iterable<Holiday> holidays) {
+		this.logger.debug("executing ParkingDTO._validations()");
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 		String date = sdf.format(new Date());
 		Date fullDate = new Date();
@@ -45,15 +48,19 @@ public class ParkingDTO implements Serializable {
 		if ((startTime >= Integer.valueOf(startTimeCity)) && (startTime < Integer.valueOf(endTimeCity))) {
 			if (!isNonWorkingDate(date, holidays)) {
 				if (!isWeekend(fullDate.toString())) {
+					this.logger.debug("complies with validations, can park");
 					return null;
 				} else
+					this.logger.debug("It's the weekend, you can't park");
 					return (new Message(
 							msg.getMessage("parking.notValid.theWeekend", null, LocaleContextHolder.getLocale())));
 			} else {
+				this.logger.debug("It is a non-working date, you cannot park");
 				return (new Message(
 						msg.getMessage("parking.notValid.workingDays", null, LocaleContextHolder.getLocale())));
 			}
 		} else {
+			this.logger.debug("It is outside the valid hours, you can not park");
 			return (new Message(msg.getMessage("city.notValid.operatingHours",
 					new String[] { city.getStartTime(), city.getEndTime() }, LocaleContextHolder.getLocale())));
 		}
@@ -77,6 +84,7 @@ public class ParkingDTO implements Serializable {
 	}
 
 	public TimePriceDTO getCurrentPaymentDetails(City city) {
+		this.logger.debug("executing ParkingDTO._TimePriceDTO()");
 		@SuppressWarnings("deprecation")
 		Date startDate = new Date(this.getStartTime());
 		Date currentDate = new Date();
@@ -93,15 +101,14 @@ public class ParkingDTO implements Serializable {
 		double valueByFraction = city.getValueByHour() / 4;
 
 		if ((rest == 0) && (minutes != 0)) {
-
-			// si pasaron extactamente de a 15 minutos
+			this.logger.debug("lapses of exactly 15 minutes elapsed"); // si pasaron extactamente de a 15 minutos
 			return new TimePriceDTO(this.getPatent(), hour, Math.floor((seconds % 3600) / 60),
 					(minutes * valueByFraction) + (hour * city.getValueByHour()));
 
 		} else {
-
-			// si pasa de a 15 minutos y pico ,te cobra los minutos que pasaron como si
-			// fueran 15
+			this.logger.debug("more than 15 minutes elapsed, please upload additional minutes as full laps");
+			// si pasa de más de 15 minutos ej 16 min,te cobra los minutos que pasaron como si
+			// transcurriera el lapso completo osea 15min+15min
 			double account = (minutes * valueByFraction) + (hour * city.getValueByHour()) + valueByFraction;
 			return new TimePriceDTO(this.getPatent(), hour, Math.floor((seconds % 3600) / 60), account);
 

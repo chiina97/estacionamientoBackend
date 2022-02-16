@@ -54,23 +54,20 @@ public class PatentController {
 	@Autowired
 	private MessageSource msg;
 
-	// Read all patents
-	@GetMapping("/user/{id}")
-	public ResponseEntity<Iterable<Patent>> getPatentsOfUser(@PathVariable(value = "id") Long userId) {
-		this.logger.debug("executing PatentController._getPatentsOfUser()");
-		return ResponseEntity.ok(patentService.findAllByUser(userId));
-
-	}
 
 	@PostMapping
 	public ResponseEntity<?> create(@Valid @RequestBody PatentDTO patentDTO, BindingResult result) {
+		this.logger.debug("executing PatentController._create()");
+		try {
 		// validaciones:
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
 
 		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
+			this.logger.debug("The patent already exists in this user's list");
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("patent.existPatent", new String[] { patentDTO.getPatent() },
 							LocaleContextHolder.getLocale())),
@@ -89,11 +86,35 @@ public class PatentController {
 
 		return new ResponseEntity<Message>(
 				new Message(msg.getMessage("patent.create", null, LocaleContextHolder.getLocale())), HttpStatus.OK);
+	
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
+	}
+	// Read all patents
+	@GetMapping("/user/{id}")
+	public ResponseEntity<?> getPatentsOfUser(@PathVariable(value = "id") Long userId) {
+		this.logger.debug("executing PatentController._getPatentsOfUser()");
+		try {
+		return ResponseEntity.ok(patentService.findAllByUser(userId));
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Read an patent
 	@GetMapping("/{id}")
-	public ResponseEntity<PatentDTO> findById(@PathVariable(value = "id") Long patentId) {
+	public ResponseEntity<?> findById(@PathVariable(value = "id") Long patentId) {
+		this.logger.debug("executing PatentController._findById()");
+		try {
 		Optional<Patent> patent = patentService.findById(patentId);
 
 		// convert entity to DTO
@@ -104,6 +125,13 @@ public class PatentController {
 			return ResponseEntity.notFound().build();
 		}
 
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 	}
 
 	// Update an patent
@@ -111,13 +139,18 @@ public class PatentController {
 	public ResponseEntity<?> update(@Valid @RequestBody PatentDTO patentDTO, BindingResult result,
 			@PathVariable(value = "id") Long patentId) {
 
+		this.logger.debug("executing PatentController._update()");
+		
+		try {
 		// validaciones:¿
 		if (result.hasErrors()) {
+			this.logger.debug("there are errors in the validations, error:"+ result.getFieldError().getDefaultMessage());
 			return new ResponseEntity<Message>(new Message(result.getFieldError().getDefaultMessage()),
 					HttpStatus.BAD_REQUEST);
 
 		}
 		if (patentService.existsByPatentAndUser(patentDTO.getPatent(), patentDTO.getUser().getId()) != null) {
+			this.logger.debug("The patent already exists in this user's list");
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("patent.existPatent", new String[] { patentDTO.getPatent() },
 							LocaleContextHolder.getLocale())),
@@ -129,6 +162,7 @@ public class PatentController {
 				patentOriginal.get().getUser().getId());
 		// si existe la patente iniciada para ese usuario
 		if (startedPatent) {
+			this.logger.debug("Unable to edit patent because parking started.");
 			return new ResponseEntity<Message>(new Message(msg.getMessage("patent.update.parking.started",
 					new String[] { patentOriginal.get().getPatent() }, LocaleContextHolder.getLocale())),
 					HttpStatus.BAD_REQUEST);
@@ -144,21 +178,32 @@ public class PatentController {
 		Patent patent = patentService.update(patentRequest, patentId);
 
 		if (patent == null) {
+			this.logger.debug("there is no patent with that id"); 
 			return ResponseEntity.notFound().build();
 		} else {
-
+			this.logger.debug("the patent with that id exists"); 
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("patent.update", null, LocaleContextHolder.getLocale())),
 					HttpStatus.CREATED);
 		}
+		}
+		catch (Exception e) {
+	        e.printStackTrace();
+	        this.logger.error("Error found: {}", e);
+	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	      
+	    }
 
 	}
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable(value = "id") Long patentId) {
+		this.logger.debug("executing PatentController._delete()");
+		try {
 		Optional<Patent> patent = patentService.findById(patentId);
 		if (this.parkingService.parkingStartedWithPatent(patent.get().getPatent(), patent.get().getUser().getId()))
+			
 			return new ResponseEntity<Message>(
 					new Message(msg.getMessage("patent.delete.parking.started",
 							new String[] { patent.get().getPatent() }, LocaleContextHolder.getLocale())),
@@ -168,5 +213,11 @@ public class PatentController {
 				new String[] { patent.get().getPatent() }, LocaleContextHolder.getLocale())), HttpStatus.OK);
 
 	}
-
+	catch (Exception e) {
+        e.printStackTrace();
+        this.logger.error("Error found: {}", e);
+        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+      
+    }
+	}
 }
