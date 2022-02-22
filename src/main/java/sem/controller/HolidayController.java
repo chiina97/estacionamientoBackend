@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import sem.dto.Message;
 import sem.model.Holiday;
 import sem.serviceImpl.HolidayService;
 import springfox.documentation.annotations.ApiIgnore;
@@ -44,7 +43,7 @@ public class HolidayController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 	}
@@ -74,7 +73,7 @@ public class HolidayController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 	}

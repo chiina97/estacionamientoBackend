@@ -91,7 +91,7 @@ public class PatentController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 	}
@@ -105,7 +105,7 @@ public class PatentController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 	}
@@ -129,7 +129,7 @@ public class PatentController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 	}
@@ -190,7 +190,7 @@ public class PatentController {
 		catch (Exception e) {
 	        e.printStackTrace();
 	        this.logger.error("Error found: {}", e);
-	        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	      
 	    }
 
@@ -216,7 +216,7 @@ public class PatentController {
 	catch (Exception e) {
         e.printStackTrace();
         this.logger.error("Error found: {}", e);
-        return new ResponseEntity<Message>(new Message("An error occured:" + e),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       
     }
 	}
